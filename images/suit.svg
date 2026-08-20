@@ -1,0 +1,6 @@
+<svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="400" fill="#EDE7DE"/>
+  <path d="M100 70 L150 100 L200 70 L230 120 L200 140 L200 360 H100 V140 L70 120 Z" fill="#242424"/>
+  <path d="M140 100 L150 130 L160 100" fill="#C9A227"/>
+  <text x="150" y="390" font-family="Georgia, serif" font-size="14" fill="#42152A" text-anchor="middle">Suit</text>
+</svg>

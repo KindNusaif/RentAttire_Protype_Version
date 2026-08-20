@@ -1,0 +1,7 @@
+<svg viewBox="0 0 300 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="400" fill="#F1DCD0"/>
+  <path d="M90 60 h120 v40 l40 260 h-200 l40 -260 z" fill="#6B1E3F"/>
+  <path d="M90 100 h120" stroke="#C9A227" stroke-width="8"/>
+  <path d="M70 360 h160" stroke="#C9A227" stroke-width="10"/>
+  <text x="150" y="390" font-family="Georgia, serif" font-size="14" fill="#42152A" text-anchor="middle">Saree</text>
+</svg>
