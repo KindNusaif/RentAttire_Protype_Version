@@ -282,11 +282,219 @@ function trackOrder(event) {
 
 
 /* ----------------------------------------------------------
-   10) RUN ON PAGE LOAD
+   10) VENDOR DATA & LOGIC (Marketplace Expansion)
+   ---------------------------------------------------------- */
+const shops = [
+    {
+        id: 1,
+        name: "Colombo Silk House",
+        city: "Colombo",
+        category: "Sarees, Bridal Wear",
+        rating: 4.7,
+        logo: "images/logo.svg"
+    },
+    {
+        id: 2,
+        name: "Kandy Formal Wear",
+        city: "Kandy",
+        category: "Suits, Formal",
+        rating: 4.5,
+        logo: "images/logo.svg"
+    }
+];
+
+const mockProducts = [
+    { id: 1, name: "Royal Red Saree", category: "Sarees", price: 2500, availability: "Available", image: "images/saree_model.png", shopId: 1 },
+    { id: 2, name: "Classic Black Suit", category: "Suits", price: 3000, availability: "Available", image: "images/suit_model.png", shopId: 2 },
+    { id: 3, name: "Pearl Bridal Dress", category: "Bridal Wear", price: 5000, availability: "Limited", image: "images/bridal_model.png", shopId: 1 },
+    { id: 4, name: "Emerald Evening Dress", category: "Dresses", price: 3500, availability: "Available", image: "images/evening_dress.png", shopId: 1 },
+    { id: 5, name: "Traditional Gold Saree", category: "Sarees", price: 2800, availability: "Available", image: "images/saree_model.png", shopId: 1 },
+    { id: 6, name: "Midnight Blue Suit", category: "Suits", price: 3200, availability: "Unavailable", image: "images/suit_model.png", shopId: 2 }
+];
+
+function validateVendorRegisterForm(event) {
+    event.preventDefault();
+    const shopName = document.getElementById("shopName")?.value.trim();
+    const ownerName = document.getElementById("ownerName")?.value.trim();
+    const email = document.getElementById("email")?.value.trim();
+    const password = document.getElementById("password")?.value;
+    
+    if (!shopName || !ownerName || !email || !password) {
+        alert("Please fill in all required fields.");
+        return false;
+    }
+    alert("Vendor Account created successfully! Please sign in.");
+    window.location.href = "vendor-login.html";
+    return false;
+}
+
+function validateVendorLoginForm(event) {
+    event.preventDefault();
+    alert("Vendor Login successful! (Demo)");
+    window.location.href = "vendor-dashboard.html";
+    return false;
+}
+
+function validateAddProductForm(event) {
+    event.preventDefault();
+    const name = document.getElementById("productName")?.value.trim();
+    const price = document.getElementById("price")?.value.trim();
+    
+    if (!name || !price) {
+        alert("Please fill in at least the product name and price.");
+        return false;
+    }
+    alert("Product added successfully! (Demo)");
+    window.location.href = "vendor-products.html";
+    return false;
+}
+
+function renderVendorProducts() {
+    const container = document.getElementById("vendorProductsGrid");
+    if (!container) return;
+    
+    let html = '';
+    mockProducts.filter(p => p.shopId === 1).forEach(p => {
+        let badgeClass = p.availability === 'Available' ? 'badge-available' : (p.availability === 'Limited' ? 'badge-limited' : 'badge-unavailable');
+        html += `
+        <div class="card">
+            <div class="card-img"><img src="${p.image}" alt="${p.name}"></div>
+            <div class="card-body">
+                <span class="badge ${badgeClass} mb-2">${p.availability}</span>
+                <h3 class="card-title">${p.name}</h3>
+                <div class="price">Rs. ${p.price} / day</div>
+                <div class="d-flex" style="gap: 10px;">
+                    <button class="btn btn-outline" style="flex:1; padding: 8px;">Edit</button>
+                    <button class="btn btn-outline" style="flex:1; padding: 8px; border-color:var(--error); color:var(--error);">Remove</button>
+                </div>
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function renderVendorOrders() {
+    const tbody = document.getElementById("vendorOrdersBody");
+    if (!tbody) return;
+    
+    const mockVendorOrders = [
+        { id: "RA1001", product: "Royal Red Saree", customer: "John Doe", dates: "Oct 12 - Oct 15", status: "Completed" },
+        { id: "RA1003", product: "Pearl Bridal Dress", customer: "Jane Smith", dates: "Nov 01 - Nov 05", status: "Preparing Attire" }
+    ];
+    
+    let html = '';
+    mockVendorOrders.forEach(o => {
+        let badgeClass = o.status === 'Completed' ? 'badge-available' : 'badge-limited';
+        html += `
+        <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #eee;">${o.id}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #eee;">${o.product}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #eee;">${o.customer}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #eee;">${o.dates}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #eee;"><span class="badge ${badgeClass}">${o.status}</span></td>
+            <td style="padding: 12px; border-bottom: 1px solid #eee;">
+                <select class="form-control" style="padding:4px; font-size:12px; display:inline-block; width:auto;" onchange="updateOrderStatus('${o.id}', this.value)">
+                    <option value="">Update...</option>
+                    <option value="Preparing Attire">Preparing Attire</option>
+                    <option value="Ready for Pickup">Ready for Pickup</option>
+                    <option value="Picked Up">Picked Up</option>
+                    <option value="Returned">Returned</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+}
+
+function updateOrderStatus(orderId, newStatus) {
+    if (!newStatus) return;
+    alert("Order " + orderId + " status updated to: " + newStatus + " (Demo)");
+}
+
+function renderShopList() {
+    const container = document.getElementById("shopsGrid");
+    if (!container) return;
+    
+    let html = '';
+    shops.forEach(s => {
+        const productCount = mockProducts.filter(p => p.shopId === s.id).length;
+        html += `
+        <div class="card">
+            <div class="card-body text-center">
+                <img src="${s.logo}" width="60" style="margin: 0 auto 15px;">
+                <h3 class="card-title">${s.name}</h3>
+                <p class="text-muted mb-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-top:-2px;">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg> ${s.city}
+                </p>
+                <p style="font-size:13px;" class="mb-3">${s.category}</p>
+                <div class="d-flex justify-between align-center mb-3 text-muted" style="font-size:12px;">
+                    <span>★ ${s.rating}</span>
+                    <span>${productCount} items</span>
+                </div>
+                <a href="shop-profile.html?id=${s.id}" class="btn btn-outline" style="width:100%">Visit Shop</a>
+            </div>
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+function renderShopProfile() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shopId = parseInt(urlParams.get('id')) || 1;
+    const shop = shops.find(s => s.id === shopId);
+    
+    if (!shop) return;
+    
+    const titleEl = document.getElementById("shopProfileName");
+    const locationEl = document.getElementById("shopProfileLocation");
+    const container = document.getElementById("shopProductsGrid");
+    
+    if (titleEl) titleEl.textContent = shop.name;
+    if (locationEl) {
+        locationEl.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-top:-2px;">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+            </svg> ${shop.city} &middot; ★ ${shop.rating}`;
+    }
+    
+    if (container) {
+        let html = '';
+        mockProducts.filter(p => p.shopId === shopId).forEach(p => {
+            let badgeClass = p.availability === 'Available' ? 'badge-available' : (p.availability === 'Limited' ? 'badge-limited' : 'badge-unavailable');
+            html += `
+            <div class="card">
+                <div class="card-img"><img src="${p.image}" alt="${p.name}"></div>
+                <div class="card-body text-center">
+                    <span class="badge ${badgeClass} mb-2">${p.availability}</span>
+                    <p style="font-size:12px; color:var(--muted)">${p.category}</p>
+                    <h3 class="card-title">${p.name}</h3>
+                    <div class="price">Rs. ${p.price} / day</div>
+                    <a href="product-details.html?id=${p.id}" class="btn btn-outline" style="width:100%">View Details</a>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+}
+
+
+/* ----------------------------------------------------------
+   11) RUN ON PAGE LOAD
    ---------------------------------------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
     const hamburger = document.getElementById("hamburger");
     if (hamburger) hamburger.addEventListener("click", toggleMenu);
 
     updateCartCount();
+
+    // Vendor & Shop initialization
+    renderVendorProducts();
+    renderVendorOrders();
+    renderShopList();
+    renderShopProfile();
 });
