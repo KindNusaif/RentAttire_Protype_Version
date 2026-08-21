@@ -82,7 +82,7 @@ function calculateRentalPrice() {
     const display = document.getElementById("totalPriceDisplay");
     if (!pickupInput || !returnInput || !display) return null;
 
-    const pricePerDay = 2500; // Royal Red Saree demo price
+    const pricePerDay = window.currentProduct ? window.currentProduct.price : 2500;
 
     if (!pickupInput.value || !returnInput.value) {
         display.textContent = "Rs. 0";
@@ -298,13 +298,175 @@ const shops = [
 ];
 
 const mockProducts = [
-    { id: 1, name: "Royal Red Saree", category: "Sarees", price: 2500, availability: "Available", image: "images/saree_model.png", shopId: 1 },
-    { id: 2, name: "Classic Black Suit", category: "Suits", price: 3000, availability: "Available", image: "images/suit_model.png", shopId: 2 },
-    { id: 3, name: "Pearl Bridal Dress", category: "Bridal Wear", price: 5000, availability: "Limited", image: "images/bridal_model.png", shopId: 1 },
-    { id: 4, name: "Emerald Evening Dress", category: "Dresses", price: 3500, availability: "Available", image: "images/evening_dress.png", shopId: 1 },
-    { id: 5, name: "Traditional Gold Saree", category: "Sarees", price: 2800, availability: "Available", image: "images/saree_model.png", shopId: 1 },
-    { id: 6, name: "Midnight Blue Suit", category: "Suits", price: 3200, availability: "Unavailable", image: "images/suit_model.png", shopId: 2 }
+    {
+        id: 1,
+        name: "Royal Red Saree",
+        category: "Sarees",
+        price: 2500,
+        availability: "Available",
+        description: "A premium traditional saree with intricate gold details, perfect for weddings, cultural celebrations, and formal occasions.",
+        sizes: ["XS", "S", "M", "L", "XL"],
+        photos: ["images/saree_royal_red.png", "images/saree_model.png"],
+        shopId: 1
+    },
+    {
+        id: 2,
+        name: "Classic Black Suit",
+        category: "Suits",
+        price: 3000,
+        availability: "Available",
+        description: "A sharp black formal suit tailored for weddings, business events, and evening celebrations.",
+        sizes: ["S", "M", "L", "XL", "2XL"],
+        photos: ["images/suit_classic_black.png", "images/suit_model.png"],
+        shopId: 2
+    },
+    {
+        id: 3,
+        name: "Pearl Bridal Dress",
+        category: "Bridal Wear",
+        price: 5000,
+        availability: "Limited",
+        description: "An elegant bridal design with pearl-inspired details for a memorable wedding celebration.",
+        sizes: ["XS", "S", "M", "L", "XL"],
+        photos: ["images/bridal_model.png", "images/evening_dress.png"],
+        shopId: 1
+    },
+    {
+        id: 4,
+        name: "Emerald Evening Dress",
+        category: "Dresses",
+        price: 3500,
+        availability: "Available",
+        description: "A refined emerald evening dress designed for galas, parties, and special nights out.",
+        sizes: ["XS", "S", "M", "L", "XL"],
+        photos: ["images/evening_dress.png", "images/bridal_model.png"],
+        shopId: 1
+    },
+    {
+        id: 5,
+        name: "Traditional Gold Saree",
+        category: "Sarees",
+        price: 2800,
+        availability: "Available",
+        description: "A graceful gold-toned saree inspired by traditional South Asian craftsmanship and celebration wear.",
+        sizes: ["XS", "S", "M", "L", "XL"],
+        photos: ["images/saree_model.png", "images/saree_royal_red.png"],
+        shopId: 1
+    },
+    {
+        id: 6,
+        name: "Midnight Blue Suit",
+        category: "Suits",
+        price: 3200,
+        availability: "Unavailable",
+        description: "A polished midnight blue suit with a classic silhouette for formal occasions and evening events.",
+        sizes: ["S", "M", "L", "XL", "2XL"],
+        photos: ["images/suit_model.png", "images/suit_classic_black.png"],
+        shopId: 2
+    },
+    {
+        id: 7,
+        name: "Ivory Bridal Gown",
+        category: "Bridal Wear",
+        price: 5500,
+        availability: "Available",
+        description: "A soft ivory bridal gown with a graceful finish for ceremonies, receptions, and formal portraits.",
+        sizes: ["XS", "S", "M", "L", "XL"],
+        photos: ["images/bridal_model.png", "images/evening_dress.png"],
+        shopId: 1
+    },
+    {
+        id: 8,
+        name: "Rose Party Dress",
+        category: "Dresses",
+        price: 2900,
+        availability: "Limited",
+        description: "A romantic rose party dress made for celebrations, dinners, and elegant social occasions.",
+        sizes: ["XS", "S", "M", "L", "XL"],
+        photos: ["images/evening_dress.png", "images/bridal_model.png"],
+        shopId: 1
+    }
 ];
+
+mockProducts.forEach(product => {
+    product.image = product.photos[0];
+});
+
+function getProductFromUrl() {
+    const id = new URLSearchParams(window.location.search).get("id");
+    return mockProducts.find(product => String(product.id) === String(id));
+}
+
+function renderProductDetails() {
+    const detailLayout = document.getElementById("productDetailLayout");
+    const notFound = document.getElementById("productNotFound");
+    if (!detailLayout || !notFound) return;
+
+    const product = getProductFromUrl();
+    if (!product) {
+        detailLayout.style.display = "none";
+        notFound.style.display = "block";
+        return;
+    }
+
+    const shop = shops.find(item => item.id === product.shopId);
+    const mainImage = document.getElementById("mainImage");
+    const gallery = document.getElementById("productGallery");
+    const badge = document.getElementById("productAvailability");
+
+    detailLayout.style.display = "grid";
+    notFound.style.display = "none";
+    document.title = product.name + " | Rent Attire";
+    document.getElementById("productCategory").textContent = product.category;
+    document.getElementById("productName").textContent = product.name;
+    document.getElementById("productDescription").textContent = product.description;
+    document.getElementById("productPrice").textContent = "Rs. " + product.price.toLocaleString() + " / day";
+    const shopLink = document.getElementById("productShop");
+    shopLink.textContent = shop ? shop.name : "Rent Attire Collection";
+    shopLink.href = shop ? "shop-profile.html?id=" + shop.id : "shops.html";
+
+    badge.textContent = product.availability;
+    badge.className = "badge mb-3 " + (product.availability === "Available" ? "badge-available" : product.availability === "Limited" ? "badge-limited" : "badge-unavailable");
+
+    mainImage.src = product.photos[0];
+    mainImage.alt = product.name;
+    gallery.innerHTML = product.photos.map((photo, index) => `
+        <img src="${photo}" alt="${product.name} photo ${index + 1}" class="product-thumbnail${index === 0 ? " active" : ""}" onclick="selectProductPhoto('${photo}', this)">
+    `).join("");
+
+    window.currentProduct = product;
+    if (typeof populateProductSizes === "function") populateProductSizes(product.sizes);
+}
+
+function selectProductPhoto(photo, thumbnail) {
+    document.getElementById("mainImage").src = photo;
+    document.querySelectorAll(".product-thumbnail").forEach(item => item.classList.remove("active"));
+    thumbnail.classList.add("active");
+}
+
+function wireProductCards() {
+    document.querySelectorAll("[data-product-id]").forEach(card => {
+        const productId = card.dataset.productId;
+        const detailsUrl = "product-details.html?id=" + encodeURIComponent(productId);
+
+        card.querySelectorAll("a").forEach(link => {
+            link.href = detailsUrl;
+        });
+
+        card.setAttribute("role", "link");
+        card.setAttribute("tabindex", "0");
+        card.addEventListener("click", event => {
+            if (event.target.closest("a, button, input, select")) return;
+            window.location.href = detailsUrl;
+        });
+        card.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                window.location.href = detailsUrl;
+            }
+        });
+    });
+}
 
 function validateVendorRegisterForm(event) {
     event.preventDefault();
@@ -461,7 +623,7 @@ function renderShopProfile() {
         mockProducts.filter(p => p.shopId === shopId).forEach(p => {
             let badgeClass = p.availability === 'Available' ? 'badge-available' : (p.availability === 'Limited' ? 'badge-limited' : 'badge-unavailable');
             html += `
-            <div class="card">
+            <div class="card" data-product-id="${p.id}">
                 <div class="card-img"><img src="${p.image}" alt="${p.name}"></div>
                 <div class="card-body text-center">
                     <span class="badge ${badgeClass} mb-2">${p.availability}</span>
@@ -522,10 +684,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     updateCartCount();
+    renderProductDetails();
 
     // Vendor & Shop initialization
     renderVendorProducts();
     renderVendorOrders();
     renderShopList();
     renderShopProfile();
+    wireProductCards();
 });

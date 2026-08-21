@@ -18,6 +18,18 @@
             outline: 3px solid var(--gold);
             outline-offset: 2px;
         }
+        .product-thumbnail {
+            height: 80px;
+            flex: 1;
+            min-width: 0;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .product-thumbnail.active {
+            border-color: var(--gold);
+        }
     </style>
 </head>
 <body>
@@ -55,27 +67,25 @@
 
     <section class="section">
         <div class="container">
-            <div class="grid-2">
+            <div id="productDetailLayout" class="grid-2">
                 <!-- Left Side: Images -->
                 <div>
                     <div style="border-radius:8px; overflow:hidden; margin-bottom:16px; box-shadow:var(--shadow); background:linear-gradient(160deg, var(--cream), #F1DCD0);">
-                        <img id="mainImage" src="images/saree_royal_red.png" alt="Royal Red Saree" style="width:100%; aspect-ratio:3/4; object-fit:cover;">
+                        <img id="mainImage" src="images/saree_royal_red.png" alt="Product image" style="width:100%; aspect-ratio:3/4; object-fit:cover;">
                     </div>
-                    <div style="display:flex; gap:10px;">
-                        <img src="images/saree_royal_red.png" alt="Royal Red Saree front view" style="height:80px; flex:1; object-fit:cover; border-radius:4px; cursor:pointer; border:2px solid var(--gold);" onclick="document.getElementById('mainImage').src=this.src">
-                        <img src="images/saree_model.png" alt="Saree model view" style="height:80px; flex:1; object-fit:cover; border-radius:4px; cursor:pointer; border:2px solid transparent;" onclick="document.getElementById('mainImage').src=this.src">
-                        <img src="images/bridal_model.png" alt="Traditional attire detail" style="height:80px; flex:1; object-fit:cover; border-radius:4px; cursor:pointer; border:2px solid transparent;" onclick="document.getElementById('mainImage').src=this.src">
+                    <div id="productGallery" style="display:flex; gap:10px;">
+                        <!-- Product thumbnails are rendered from the selected item's photos. -->
                     </div>
                 </div>
 
                 <!-- Right Side: Details -->
                 <div>
-                    <p style="color:var(--muted); font-size:14px; margin-bottom:5px;">Sarees &middot; <a href="shop-profile.html?id=1" style="color:inherit; text-decoration:none;">Colombo Silk House</a></p>
-                    <h1 style="font-size:32px; margin-bottom:10px;">Royal Red Saree</h1>
-                    <span class="badge badge-available mb-3">Available</span>
-                    <div class="price" style="font-size:24px;">Rs. 2,500 / day</div>
+                    <p style="color:var(--muted); font-size:14px; margin-bottom:5px;"><span id="productCategory">Collection</span> &middot; <a id="productShop" href="shop-profile.html" style="color:inherit; text-decoration:none;">Shop</a></p>
+                    <h1 id="productName" style="font-size:32px; margin-bottom:10px;">Product</h1>
+                    <span id="productAvailability" class="badge badge-available mb-3">Available</span>
+                    <div id="productPrice" class="price" style="font-size:24px;">Rs. 0 / day</div>
                     
-                    <p class="mb-4 text-muted">A premium traditional saree suitable for weddings, cultural celebrations, and formal occasions. Woven with intricate gold details and made from the finest silk.</p>
+                    <p id="productDescription" class="mb-4 text-muted">Product details are loading.</p>
                     
                     <!-- Size Selection with International Standards -->
                     <div style="margin-bottom: 32px;">
@@ -128,6 +138,11 @@
                     </div>
                 </div>
             </div>
+            <div id="productNotFound" class="text-center" style="display:none; padding:80px 20px;">
+                <h1 class="section-title">Item Not Found</h1>
+                <p class="section-subtitle" style="margin:0 auto 28px;">The item link is missing or no longer available.</p>
+                <a href="products.html" class="btn btn-primary">Browse Collection</a>
+            </div>
         </div>
     </section>
 
@@ -161,6 +176,12 @@
 
         let currentStandard = 'US';
         let selectedSize = null;
+        let productSizes = null;
+
+        function populateProductSizes(sizes) {
+            productSizes = sizes;
+            updateSizeOptions();
+        }
 
         function selectSizeStandard(standard) {
             currentStandard = standard;
@@ -186,7 +207,7 @@
 
         function updateSizeOptions() {
             const container = document.getElementById('sizeOptions');
-            const sizes = sizeStandards[currentStandard];
+            const sizes = productSizes || sizeStandards[currentStandard];
             
             container.innerHTML = sizes.map((size, index) => `
                 <button 
@@ -253,6 +274,11 @@
         }
 
         function handleAddToCart() {
+            if (!window.currentProduct) {
+                alert("This item could not be found.");
+                return;
+            }
+
             const pickupDate = document.getElementById("pickupDate").value;
             const returnDate = document.getElementById("returnDate").value;
             const qty = parseInt(document.getElementById("qty").value);
@@ -270,14 +296,9 @@
             const calc = calculateRentalPrice();
             if(!calc || calc.days < 1) return; // Validation failed
             
-            const product = { 
-                id: 1, 
-                name: "Royal Red Saree", 
-                price: 2500, 
-                image: "",
-                size: selectedSize,
-                sizeStandard: currentStandard
-            };
+            const product = window.currentProduct;
+            product.size = selectedSize;
+            product.sizeStandard = currentStandard;
             addToCart(product, qty, calc.days, pickupDate, returnDate);
         }
 
