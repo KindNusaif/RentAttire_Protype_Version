@@ -1,15 +1,4 @@
-/* ==========================================================
-   RentAttire - script.js
-   Simple client-side logic (no frameworks).
-   PHP + MySQL will handle real server-side logic later.
-   ========================================================== */
 
-
-/* ----------------------------------------------------------
-   0) CART STATE
-   The cart lives in the browser's localStorage so it stays
-   available when the user moves between pages.
-   ---------------------------------------------------------- */
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 function saveCart() {
@@ -22,7 +11,13 @@ function saveCart() {
    ---------------------------------------------------------- */
 function toggleMenu() {
     const navLinks = document.getElementById("navLinks");
-    if (navLinks) navLinks.classList.toggle("active");
+    const hamburger = document.getElementById("hamburger");
+    if (!navLinks || !hamburger) return;
+
+    const isOpen = navLinks.classList.toggle("open");
+    navLinks.classList.toggle("active", isOpen);
+    hamburger.setAttribute("aria-expanded", String(isOpen));
+    document.body.classList.toggle("menu-open", isOpen);
 }
 
 
@@ -40,8 +35,7 @@ function updateCartCount() {
 /* ----------------------------------------------------------
    3) ADD TO CART
    Called from product-details.html once the dates have been
-   validated and the rental price has been calculated.
-   ---------------------------------------------------------- */
+   validated and the rental price has been calculated.*/
 function addToCart(product, qty, days, pickupDate, returnDate) {
     const subtotal = product.price * qty * days;
 
@@ -488,7 +482,44 @@ function renderShopProfile() {
    ---------------------------------------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
     const hamburger = document.getElementById("hamburger");
-    if (hamburger) hamburger.addEventListener("click", toggleMenu);
+    const navLinks = document.getElementById("navLinks");
+
+    if (hamburger && navLinks) {
+        hamburger.setAttribute("aria-expanded", "false");
+
+        const closeMenu = () => {
+            navLinks.classList.remove("open", "active");
+            hamburger.setAttribute("aria-expanded", "false");
+            document.body.classList.remove("menu-open");
+        };
+
+        hamburger.addEventListener("click", (event) => {
+            event.stopPropagation();
+            toggleMenu();
+        });
+
+        navLinks.querySelectorAll("a").forEach((link) => {
+            link.addEventListener("click", closeMenu);
+        });
+
+        document.addEventListener("click", (event) => {
+            if (
+                navLinks.classList.contains("open") &&
+                !navLinks.contains(event.target) &&
+                !hamburger.contains(event.target)
+            ) {
+                closeMenu();
+            }
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") closeMenu();
+        });
+
+        window.addEventListener("resize", () => {
+            if (window.innerWidth > 860) closeMenu();
+        });
+    }
 
     updateCartCount();
 
