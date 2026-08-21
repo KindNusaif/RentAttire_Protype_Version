@@ -372,7 +372,7 @@ const mockProducts = [
         availability: "Available",
         description: "A soft ivory bridal gown with a graceful finish for ceremonies, receptions, and formal portraits.",
         sizes: ["XS", "S", "M", "L", "XL"],
-        photos: ["images/bridal_model.png", "images/evening_dress.png"],
+        photos: ["images/evory.jpg", "images/bridal_model.png"],
         shopId: 1
     },
     {
@@ -449,7 +449,7 @@ function wireProductCards() {
         const productId = card.dataset.productId;
         const detailsUrl = "product-details.html?id=" + encodeURIComponent(productId);
 
-        card.querySelectorAll("a").forEach(link => {
+        card.querySelectorAll('a[href^="product-details.html"]').forEach(link => {
             link.href = detailsUrl;
         });
 
@@ -624,7 +624,7 @@ function renderShopProfile() {
             let badgeClass = p.availability === 'Available' ? 'badge-available' : (p.availability === 'Limited' ? 'badge-limited' : 'badge-unavailable');
             html += `
             <div class="card" data-product-id="${p.id}">
-                <div class="card-img"><img src="${p.image}" alt="${p.name}"></div>
+                <div class="card-img"><img src="${p.photos[0]}" alt="${p.name}" onerror="this.onerror=null; this.src='images/bridal_model.png';"></div>
                 <div class="card-body text-center">
                     <span class="badge ${badgeClass} mb-2">${p.availability}</span>
                     <p style="font-size:12px; color:var(--muted)">${p.category}</p>
