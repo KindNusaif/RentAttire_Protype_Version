@@ -8,20 +8,44 @@
 
 /* ---------- 1) Design Tokens ---------- */
 :root {
-    --primary:        #7b1f45;
-    --primary-dark:   #2e0a1a;
-    --primary-light:  #a8305f;
-    --gold:           #c9a84c;
-    --gold-light:     #f0d897;
-    --gold-pale:      #fdf6e0;
-    --cream:          #faf7f2;
-    --white:          #ffffff;
-    --text:           #1a1a2e;
-    --muted:          #7a7a9a;
-    --border:         rgba(0,0,0,0.07);
-    --background:     #f5f3ef;
-    --success:        #2d8a5f;
-    --error:          #c0392b;
+    /* ---- Core maroon family (tonal depth) ---- */
+    --maroon-950:     #2B0D18;   /* near-black maroon — footer, deep backgrounds */
+    --maroon-900:     #3A1020;   /* was --primary-dark */
+    --maroon-700:     #5E1B34;   /* mid tone, use for hover states */
+    --maroon-500:     #8C2E4E;   /* was --primary-light */
+    --maroon-100:     #F1DCD0;   /* soft blush tint for section backgrounds */
+
+    /* ---- Gold family (metallic gradient) ---- */
+    --gold-700:       #9E7B18;   /* shadow/depth edge of gold gradient */
+    --gold-500:       #C9A227;   /* true gold — main accent */
+    --gold-300:       #E4CB8E;   /* light gold — text on dark, hover highlights */
+    --gold-100:       #F6ECD1;   /* barely-there gold wash for card backgrounds */
+
+    /* ---- Neutrals (warm luxury tones) ---- */
+    --ivory:          #FFFCF7;    /* pure luxury white-ivory, use for cards */
+    --cream:          #FFF9F0;    /* page background */
+    --stone:          #F3ECE2;    /* secondary section background, warmer than pure grey */
+    --charcoal-900:   #1E1A17;    /* replaces flat body text, warmer black */
+    --charcoal-600:   #6B6058;    /* replaces flat muted, warmer grey */
+
+    /* ---- Legacy aliases (for compatibility) ---- */
+    --primary:        #8C2E4E;    /* maps to --maroon-500 */
+    --primary-dark:   #3A1020;    /* maps to --maroon-900 */
+    --primary-light:  #C9A227;    /* maps to --gold-500 */
+    --gold:           #C9A227;    /* maps to --gold-500 */
+    --gold-light:     #E4CB8E;    /* maps to --gold-300 */
+    --gold-pale:      #F6ECD1;    /* maps to --gold-100 */
+    --white:          #FFFCF7;    /* maps to --ivory */
+    --text:           #1E1A17;    /* maps to --charcoal-900 */
+    --muted:          #6B6058;    /* maps to --charcoal-600 */
+    --border:         rgba(30,10,20,0.08);
+    --background:     #FFF9F0;    /* maps to --cream */
+
+    /* ---- Status colors (desaturated for elegance) ---- */
+    --success:        #2F6B47;
+    --error:          #A32E1F;
+
+    /* ---- Design system ---- */
     --radius:         14px;
     --radius-sm:      8px;
     --radius-xl:      24px;
@@ -29,11 +53,12 @@
     --shadow-sm:      0 4px 16px rgba(30,10,20,0.06);
     --shadow:         0 12px 32px rgba(30,10,20,0.09);
     --shadow-hover:   0 24px 56px rgba(30,10,20,0.16);
-    --shadow-gold:    0 8px 30px rgba(201,168,76,0.25);
+    --shadow-gold:    0 8px 30px rgba(201,162,39,0.15);
     --transition:     all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
     --font-body:      'Inter', sans-serif;
     --font-heading:   'Playfair Display', serif;
     --font-display:   'Cormorant Garamond', serif;
+    --font-luxury:    'Cormorant Garamond', serif; /* for pricing and product names */
 }
 
 /* ---------- 2) Reset / Base ---------- */
@@ -43,11 +68,17 @@ html { scroll-behavior: smooth; }
 
 body {
     font-family: var(--font-body);
-    background-color: var(--background);
-    color: var(--text);
+    background-color: var(--cream);
+    color: var(--charcoal-900);
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+/* Luxury focus states for accessibility */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 3px solid var(--gold-500);
+    outline-offset: 2px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -64,14 +95,17 @@ ul { list-style: none; }
 /* ---------- 3) Layout ---------- */
 .container { max-width: 1240px; margin: 0 auto; padding: 0 28px; }
 .section { padding: 96px 0; }
+/* Luxury section alternation - apply to sections with content */
+body > .section:nth-of-type(odd)  { background: var(--cream); }
+body > .section:nth-of-type(even) { background: var(--stone); }
 
 .section-eyebrow {
     font-family: var(--font-body);
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 3.5px;
-    color: var(--gold);
+    color: var(--gold-500);
     margin-bottom: 14px;
     display: block;
 }
@@ -131,60 +165,67 @@ ul { list-style: none; }
 .btn:hover::before { opacity: 1; }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-    color: var(--white);
-    box-shadow: 0 6px 20px rgba(123,31,69,0.3);
+    background: var(--maroon-900);
+    color: var(--gold-300);
+    border: 1px solid var(--gold-500);
+    box-shadow: 0 6px 20px rgba(43,13,24,0.25);
 }
 .btn-primary:hover {
+    background: var(--maroon-700);
+    color: var(--ivory);
+    border-color: var(--gold-300);
     transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(123,31,69,0.42);
+    box-shadow: 0 12px 32px rgba(43,13,24,0.35);
 }
 
 .btn-gold {
-    background: linear-gradient(135deg, var(--gold) 0%, #e8c76a 100%);
-    color: var(--primary-dark);
-    box-shadow: var(--shadow-gold);
-    font-weight: 700;
+    background: transparent;
+    color: var(--gold-300);
+    border: 1.5px solid var(--gold-500);
+    font-weight: 600;
 }
 .btn-gold:hover {
+    background: var(--gold-500);
+    color: var(--maroon-950);
     transform: translateY(-3px);
-    box-shadow: 0 14px 36px rgba(201,168,76,0.4);
+    box-shadow: 0 14px 36px rgba(201,162,39,0.25);
 }
 
 .btn-outline {
     background: transparent;
-    border-color: var(--primary);
-    color: var(--primary);
+    border-color: var(--maroon-700);
+    color: var(--maroon-700);
 }
 .btn-outline:hover {
-    background: var(--primary);
-    color: var(--white);
+    background: var(--maroon-100);
+    color: var(--maroon-900);
+    border-color: var(--maroon-900);
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(123,31,69,0.22);
 }
 
 .btn-outline-white {
     background: transparent;
-    border-color: rgba(255,255,255,0.45);
-    color: var(--white);
+    border-color: var(--gold-300);
+    color: var(--gold-300);
     backdrop-filter: blur(6px);
 }
 .btn-outline-white:hover {
-    background: rgba(255,255,255,0.15);
-    border-color: rgba(255,255,255,0.8);
+    background: var(--gold-500);
+    color: var(--maroon-950);
+    border-color: var(--gold-500);
 }
 
 .btn-sm { padding: 9px 22px; font-size: 0.82rem; }
 
 /* ---------- 5) Header / Navbar ---------- */
 header {
-    background: rgba(255,255,255,0.88);
+    background: rgba(255,252,247,0.92);
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 1px solid rgba(201,168,76,0.12);
+    border-bottom: 1px solid var(--gold-100);
     box-shadow: 0 2px 24px rgba(30,10,20,0.06);
 }
 .navbar {
@@ -210,7 +251,7 @@ header {
 .nav-links a {
     font-weight: 500;
     font-size: 0.88rem;
-    color: var(--text);
+    color: var(--charcoal-900);
     position: relative;
     padding: 4px 0;
     letter-spacing: 0.3px;
@@ -222,14 +263,15 @@ header {
     left: 50%;
     transform: translateX(-50%);
     width: 0%;
-    height: 1.5px;
-    background: linear-gradient(90deg, var(--gold), var(--primary-light));
+    height: 1px;
+    background: var(--gold-500);
     transition: width 0.35s ease;
     border-radius: 2px;
 }
 .nav-links a:hover::after,
 .nav-links a.active::after { width: 100%; }
-.nav-links a:hover { color: var(--primary); }
+.nav-links a:hover { color: var(--maroon-700); }
+.nav-links a.active { color: var(--maroon-700); }
 
 .nav-icons { display: flex; align-items: center; gap: 22px; }
 .nav-icons a {
@@ -273,8 +315,8 @@ header {
 
 /* ---------- 6) Hero ---------- */
 .hero {
-    background: linear-gradient(150deg, var(--primary-dark) 0%, #4a0f28 40%, #7b1f45 100%);
-    color: var(--white);
+    background: linear-gradient(135deg, var(--maroon-950) 0%, var(--maroon-900) 45%, var(--maroon-700) 100%);
+    color: var(--ivory);
     padding: 140px 0 120px;
     text-align: center;
     position: relative;
@@ -285,7 +327,7 @@ header {
     content: '';
     position: absolute;
     width: 700px; height: 700px;
-    background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 65%);
+    background: radial-gradient(circle, rgba(201,162,39,0.12) 0%, transparent 65%);
     top: -300px; right: -200px;
     animation: orbFloat 8s ease-in-out infinite alternate;
 }
@@ -293,7 +335,7 @@ header {
     content: '';
     position: absolute;
     width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 65%);
+    background: radial-gradient(circle, rgba(246,236,209,0.08) 0%, transparent 65%);
     bottom: -150px; left: -150px;
     animation: orbFloat 10s ease-in-out infinite alternate-reverse;
 }
@@ -307,7 +349,7 @@ header {
     display: block;
     width: 60px;
     height: 2px;
-    background: linear-gradient(90deg, var(--gold), transparent);
+    background: linear-gradient(90deg, var(--gold-500), transparent);
     margin: 0 auto 28px;
     position: relative;
     z-index: 2;
@@ -319,7 +361,7 @@ header {
     font-weight: 700;
     letter-spacing: 4px;
     text-transform: uppercase;
-    color: var(--gold-light);
+    color: var(--gold-300);
     margin-bottom: 20px;
     position: relative;
     z-index: 2;
@@ -327,7 +369,7 @@ header {
 
 .hero h1 {
     font-family: var(--font-display);
-    color: var(--white);
+    color: var(--ivory);
     font-size: clamp(3rem, 6vw, 5.2rem);
     font-weight: 600;
     max-width: 820px;
@@ -340,10 +382,10 @@ header {
 }
 .hero h1 em {
     font-style: italic;
-    color: var(--gold-light);
+    color: var(--gold-300);
 }
 .hero p {
-    color: rgba(255,255,255,0.78);
+    color: var(--gold-300);
     max-width: 580px;
     margin: 0 auto 48px;
     font-size: 1.12rem;
@@ -402,24 +444,24 @@ header {
 
 /* ---------- 8) Cards ---------- */
 .card {
-    background: var(--white);
+    background: linear-gradient(160deg, var(--ivory) 0%, var(--stone) 100%);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
     transition: var(--transition);
     display: flex;
     flex-direction: column;
-    border: 1px solid rgba(201,168,76,0.08);
+    border: 1px solid var(--gold-100);
 }
 .card:hover {
     transform: translateY(-10px);
     box-shadow: var(--shadow-hover);
-    border-color: rgba(201,168,76,0.18);
+    border-color: var(--gold-300);
 }
 
 .card-img {
     aspect-ratio: 3 / 4;
-    background: var(--cream);
+    background: linear-gradient(135deg, var(--cream) 0%, var(--stone) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -537,12 +579,22 @@ header {
 }
 
 .price {
-    font-family: var(--font-display);
+    font-family: var(--font-luxury);
     font-size: 1.5rem;
-    color: var(--primary);
-    font-weight: 700;
+    color: var(--maroon-700);
+    font-weight: 600;
     margin: 10px 0 20px;
     letter-spacing: -0.5px;
+    position: relative;
+    display: inline-block;
+}
+.price::after {
+    content: "";
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--gold-500);
+    margin-top: 6px;
 }
 
 /* ---------- 9) Badges ---------- */
@@ -550,14 +602,21 @@ header {
     display: inline-block;
     padding: 5px 14px;
     border-radius: 30px;
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: 0.72rem;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
 }
-.badge-available { background: rgba(45,138,95,0.1); color: var(--success); }
-.badge-limited   { background: rgba(201,168,76,0.14); color: #8a6a10; }
-.badge-unavailable { background: rgba(192,57,43,0.09); color: var(--error); }
+.badge-available { background: #E8F0EA; color: #2F6B47; }
+.badge-limited   { background: var(--gold-100); color: var(--gold-700); }
+.badge-unavailable { background: #F5E6E3; color: var(--error); }
+
+/* Luxury typography for product names */
+.card-title, .product-name {
+    font-family: var(--font-luxury);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
 
 /* ---------- 10) How It Works (Luxury Steps) ---------- */
 .how-step {
@@ -694,8 +753,8 @@ textarea.form-control { resize: vertical; min-height: 120px; }
 
 /* ---------- 13) Footer ---------- */
 footer {
-    background: var(--primary-dark);
-    color: var(--gold-light);
+    background: var(--maroon-950);
+    color: var(--gold-300);
     padding: 90px 0 36px;
     position: relative;
     overflow: hidden;
@@ -705,7 +764,7 @@ footer::before {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    background: linear-gradient(90deg, transparent, var(--gold-500), transparent);
     opacity: 0.4;
 }
 .footer-grid {
@@ -720,7 +779,7 @@ footer::before {
 .footer-logo {
     font-family: var(--font-display);
     font-size: 2.1rem;
-    color: var(--white);
+    color: var(--ivory);
     margin-bottom: 16px;
     font-weight: 700;
     letter-spacing: -0.5px;
@@ -744,7 +803,7 @@ footer::before {
     align-items: center;
     gap: 6px;
 }
-.footer-links a:hover { color: var(--gold-light); transform: translateX(4px); }
+.footer-links a:hover { color: var(--ivory); transform: translateX(4px); }
 .footer-bottom {
     text-align: center;
     font-size: 0.82rem;
